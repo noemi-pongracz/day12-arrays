@@ -109,7 +109,11 @@ console.log(result4);
 /**
  * Considering the following nested object, make that all of its properties cannot be ever changed
  * So it will only have readonly properties.
- */
+ * After appling the solution,
+ * if I attempt to change collection.item.properties.metadata.m1
+ * or any other combination of properties, no effect should take place
+ * Bonus: You can throw an error on attempting to change a readonly property
+ *  */
 
 const collection = {
   item: {
@@ -158,9 +162,8 @@ const changeProp = () => {
 
 changeProp();
 
-/**
- * After appling the solution,
- * if I attempt to change collection.item.properties.metadata.m1
- * or any other combination of properties, no effect should take place
- * Bonus: You can throw an error on attempting to change a readonly property
- *  */
+/* QUESTION: 
+ * Can I somehow send the prop I want to change as a parameter?
+ * I found this recursive solution: https://stackoverflow.com/questions/13719593/how-to-set-object-property-of-object-property-of-given-its-string-name-in-ja
+ * but in this way, due to use strict, it throws the error for the parent prop "collection.item"
+ */
