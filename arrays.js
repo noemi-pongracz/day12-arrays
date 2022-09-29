@@ -26,20 +26,22 @@ const students = [{
 ];
 
 // (1)
+
 const result = students.filter(student => {
-  student.name = student.name[0];
-  return student.age > 23
+  if (student.age > 23) {
+    student.name = student.name[0];
+    return student;
+  }
 })
 
 console.log(result);
 
 // (2)
-const result2 = students.filter(student => student.age > 23).map(student => {
-  return {
+const result2 = students.filter(student => student.age > 23)
+  .map(student => ({
     name: student.name.charAt(0),
     age: student.age
-  };
-});
+  }));
 
 console.log(result2);
 
@@ -106,6 +108,48 @@ console.log(result4);
 
 // returns: [{ name: "Liverpool", score: 900, name: "Real Madrid": 450 }]
 
+/* Return the first two highest scores above 100...(challenge accepted :) ) */
+
+// (1)
+const result5 = teams.reduce((arr, team) => {
+
+  if (team.score > 100) {
+    arr.push({
+      name: team.name,
+      score: team.score * 3
+    });
+  }
+
+  return arr;
+
+}, []).sort((a, b) => b.score - a.score).slice(0, 2);
+
+console.log(result5);
+
+// (2)
+const arr2 = [];
+
+teams.forEach(team => {
+  if (team.score > 100) {
+    arr2.push({
+      name: team.name,
+      score: team.score * 3
+    });
+  }
+});
+
+const result6 = arr.sort((a, b) => b.score - a.score).slice(0, 2);
+console.log(result6);
+
+// (3)
+
+const result7 = teams.sort((a, b) => b.score - a.score).slice(0, 2).map(team => ({
+  name: team.name,
+  score: team.score * 3
+}));
+
+console.log(result7);
+
 /**
  * Considering the following nested object, make that all of its properties cannot be ever changed
  * So it will only have readonly properties.
@@ -151,19 +195,29 @@ function deepFreeze(object) {
 
 deepFreeze(collection);
 
-const changeProp = () => {
-  'use strict'
-  try {
-    collection.item.properties.metadata.m1 = "v3";
-  } catch (e) {
-    console.warn(e.message);
+function assign(obj, prop, value) {
+  if (typeof prop === "string")
+    prop = prop.split(".");
+
+  if (prop.length > 1) {
+    var e = prop.shift();
+    assign(obj[e] =
+      Object.prototype.toString.call(obj[e]) === "[object Object]" ?
+      obj[e] :
+      {},
+      prop,
+      value);
+  } else
+    obj[prop[0]] = value;
+}
+
+const changeProp = (obj, prop, value) => {
+  if (Object.isFrozen(obj)) {
+    console.warn(`Cannot assign to read only property ${prop}`);
+  } else {
+    assign(obj, prop, value);
+    console.log(obj);
   }
 };
 
-changeProp();
-
-/* QUESTION: 
- * Can I somehow send the prop I want to change as a parameter?
- * I found this recursive solution: https://stackoverflow.com/questions/13719593/how-to-set-object-property-of-object-property-of-given-its-string-name-in-ja
- * but in this way, due to use strict, it throws the error for the parent prop "collection.item"
- */
+changeProp(collection, "item.properties.metadata.m1", "v3");
